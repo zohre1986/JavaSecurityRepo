@@ -1,0 +1,19 @@
+Bug 528661 (xssfilter)
+Heuristics to block reflected XSS via X-XSS-Protection HTTP header
+-------------------------------------------------------------------
+https://bugzilla.mozilla.org/show_bug.cgi?id=528661
+-------------------------------------------------------------------
+
+Inspired by Tom going through all sec-want bugs, I'm looking at this bug again.
+Out of convenience, I'll quote myself from some place else:
+
+There have been numerous discussions, the latest one in late 2016 and we
+had come to the conclusion that it is currently not worth the effort for
+Firefox to provide a built-in feature:
+
+An XSS filter can not protect against stored (aka persistent) XSS or DOM
+XSS, which has become more and more prevalent recently.
+An XSS filter is prone to security holes if not maintained very
+diligently and actively. It is hard to justify security engineering time
+on a feature that provides limited value.
+Lastly, there is an XSS filter in NoScript that people can use.

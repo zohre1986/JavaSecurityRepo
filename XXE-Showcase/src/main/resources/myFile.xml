@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE customer
+        [
+                <!ENTITY name SYSTEM "/tmp">
+                <!ENTITY data SYSTEM "file:///c:/windows/win.ini">
+                ]
+        >
+<customer>
+    <name>
+        &name;
+    </name>
+    <data>
+        &data;
+    </data>
+</customer>

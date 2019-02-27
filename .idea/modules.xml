@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/OWASP-Java/OWASP-Java.iml" filepath="$PROJECT_DIR$/OWASP-Java/OWASP-Java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Pure-Java/Pure-Java.iml" filepath="$PROJECT_DIR$/Pure-Java/Pure-Java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Top-Project.iml" filepath="$PROJECT_DIR$/Top-Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/XXE-Showcase/XXE-Showcase.iml" filepath="$PROJECT_DIR$/XXE-Showcase/XXE-Showcase.iml" />
+    </modules>
+  </component>
+</project>

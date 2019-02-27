@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="OWASP-Java" />
+        <module name="Pure-Java" />
+        <module name="XXE-Showcase" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="OWASP-Java" target="1.8" />
+      <module name="Pure-Java" target="11" />
+      <module name="Top-Project" target="11" />
+      <module name="XXE-Showcase" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
