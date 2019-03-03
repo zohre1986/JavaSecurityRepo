@@ -10,6 +10,9 @@
       href="static/css/custom.css">
 <body>
 <div class="container">
+    <%
+        String username = (String) session.getAttribute("username");
+    %>
     <sql:query dataSource="jdbc/MySQL_readonly_DataSource" var="result">
         SELECT u.username, gb.comment, gb.created_at
         FROM guestbook gb
@@ -46,7 +49,7 @@
 
     <p class="row" >
         <c:choose>
-            <c:when test="${cookie['username'] != null}">
+            <c:when test="${username != null}">
                 <a href="comment.jsp">
                     <button class="btn btn-lg btn-primary">
                         Post a comment

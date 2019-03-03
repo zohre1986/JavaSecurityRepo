@@ -6,10 +6,16 @@
     <jsp:include page="common.jsp"/>
 </head>
 <body>
+
 <div class="container">
-    <%--FIXME: OWASP A5:2017 - Broken Access Control
+    <%--FIXED: OWASP A5:2017 - Broken Access Control
         This page must not be accessible to unauthenticated users
+
     --%>
+    <%
+        HttpSession httpSession = request.getSession();
+        String username = (String) httpSession.getAttribute("username");
+    %>
     <%--FIXME: OWASP A2:2017 - Broken Authentication
         Session data about the currently authenticated user is retrieved from cookies
     --%>
@@ -32,8 +38,8 @@
     <form method="post" action="comment.do">
         <label for="comment"></label>
 
-        <%--FIXME: OWASP A5:2017 - Broken Access Control --%>
-        <input type="hidden" name="username" value="${cookie['username'].value}">
+        <%--FIXED: OWASP A5:2017 - Broken Access Control --%>
+     <%--   <input type="hidden" name="username" value="${cookie['username'].value}"> --%>
 
         <textarea id="comment" name="comment"
                   class="form-control row"
