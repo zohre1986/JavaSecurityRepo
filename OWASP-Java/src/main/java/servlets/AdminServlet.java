@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -88,7 +89,10 @@ public class AdminServlet extends HttpServlet {
             // return value not logged
             //FIXME: OWASP A1:2017 - Injection
             //FIXME: OWASP A8:2013 - CSRF
-            st.executeUpdate(query.toString());
+//            st.executeUpdate(query.toString());
+            PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
+            int result = preparedStatement.executeUpdate();
+            logger.info(result + " row(s) affected by update query.");
 
             response.sendRedirect("admin.jsp");
 

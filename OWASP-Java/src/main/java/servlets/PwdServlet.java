@@ -114,10 +114,12 @@ public class PwdServlet extends HttpServlet {
                 return;
             }
             //FIXME: OWASP A1:2017 - Injection
-            String query = String.format("update users " +
-                            "set password = '%s' " +
-                            "where username = '%s'",
-                    password, username);
+            String query  = "Update users SET password = ? WHERE username = ?";
+//               String.format("update users " +
+//                            "set password = '%s' " +
+//                            "where username = '%s'",
+//                    password, username);
+            PreparedStatement preparedStatement1 = connection.prepareStatement(query);
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // Log reveals sensitive info
@@ -126,8 +128,8 @@ public class PwdServlet extends HttpServlet {
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
             //FIXME: OWASP A8:2013 - CSRF
-            st.executeUpdate(query);
-
+//            st.executeUpdate(query);
+            preparedStatement1.executeUpdate();
             //FIXED: OWASP A5:2017 - Broken Access Control
             //  Cookie used without any signature
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
