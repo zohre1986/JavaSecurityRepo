@@ -6,10 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
@@ -30,8 +27,9 @@ public class AdminServlet extends HttpServlet {
     static {
         try {
             InitialContext ctx = new InitialContext();
-            //FIXME: OWASP A5:2017 - Broken Access Control (root privileges)
-            ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            //FIXED: OWASP A5:2017 - Broken Access Control (root privileges)
+            //ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            ds = (DataSource) ctx.lookup("jdbc/MySQL_Write_DataSource");
         } catch (NamingException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -42,8 +40,11 @@ public class AdminServlet extends HttpServlet {
                          HttpServletResponse response)
             throws IOException {
 
-        //FIXME: OWASP A5:2017 - Broken Access Control
-        String role = getCookieByName(request, "role");
+        //FIXED: OWASP A5:2017 - Broken Access Control
+       // String role = getCookieByName(request, "role");
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+
         if (!"admin".equals(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN,
                     "You must be a system admin!");
