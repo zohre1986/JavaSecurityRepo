@@ -9,14 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @WebServlet("/pwd.do")
 public class PwdServlet extends HttpServlet {
     private static final long serialVersionUID = -8123085861273087650L;
+    public static final Pattern VALID_PASSWORD_REGEX = Pattern.compile("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!-/|:-@|\\[-`|{-~]).*)");
+
     private static DataSource ds;
 
     private Logger logger = Logger.getLogger(getClass().getName());
@@ -24,8 +26,9 @@ public class PwdServlet extends HttpServlet {
     static {
         try {
             InitialContext ctx = new InitialContext();
-            //FIXME: OWASP A5:2017 - Broken Access Control (root privileges)
-            ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            //FIXED: OWASP A5:2017 - Broken Access Control (root privileges)
+           // ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            ds = (DataSource) ctx.lookup("jdbc/MySQL_Write_DataSource");
         } catch (NamingException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -53,17 +56,63 @@ public class PwdServlet extends HttpServlet {
             //    Use POST method!
             // 2) Use TLS.
             String password = request.getParameter("password");
+            String confirmPassword = request.getParameter("confirm");
+            String oldPassword = request.getParameter("old");
 
-            //FIXME: OWASP A5:2017 - Broken Access Control
+            //FIXED: OWASP A5:2017 - Broken Access Control
             // Old password not checked
 
-            //FIXME: OWASP A5:2017 - Broken Access Control
+            String oldPassQry = "select password from users where username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(oldPassQry);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.first()){
+                String oldPass = resultSet.getString("password");
+                if (!oldPass.equals(oldPassword)) {
+                    logger.warning("Your old password was incorrect!");
+                    response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                    return;
+                }
+            }else {
+                logger.warning("User NOT exist!");
+                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                return;
+            }
+
+
+            //FIXED: OWASP A5:2017 - Broken Access Control
             // Security policies not checked:
-            //  1) new password != old password
+
             //  2) minimum password age
+
+            //  1) new password != old password
+            if (password.equals(oldPassword)) {
+                logger.warning("The old password must be different from new password!");
+                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+                logger.warning("The new password must be equal to confirm password!");
+                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                return;
+            }
             //  3) password complexity
+            Matcher matcher = VALID_PASSWORD_REGEX.matcher(password);
+            if (!matcher.find()) {
+                logger.warning("The password complexity is violated");
+                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                return;
+            }
+
             //  4) password length
 
+            if (password == null || password.length() < 6) {
+                logger.warning("The new password must be at least 6 character!");
+                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                return;
+            }
             //FIXME: OWASP A1:2017 - Injection
             String query = String.format("update users " +
                             "set password = '%s' " +
