@@ -128,7 +128,7 @@ public class PwdServlet extends HttpServlet {
             //FIXME: OWASP A8:2013 - CSRF
             st.executeUpdate(query);
 
-            //FIXME: OWASP A5:2017 - Broken Access Control
+            //FIXED: OWASP A5:2017 - Broken Access Control
             //  Cookie used without any signature
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             //  Password stored as plaintext on client-side
@@ -137,8 +137,9 @@ public class PwdServlet extends HttpServlet {
             //  Cookie security settings (httpOnly, secure, age, domain, path, same-site)
             //  For same-site, see: https://stackoverflow.com/a/43106260/459391
             //      response.setHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict")
-            Cookie pCookie = new Cookie("password", password);
-            response.addCookie(pCookie);
+
+//            Cookie pCookie = new Cookie("password", password);
+//            response.addCookie(pCookie);
 
             response.sendRedirect("user.jsp");
 

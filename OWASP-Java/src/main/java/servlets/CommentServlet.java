@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
@@ -23,8 +24,9 @@ public class CommentServlet extends HttpServlet {
     static {
         try {
             InitialContext ctx = new InitialContext();
-            //FIXME: OWASP A5:2017 - Broken Access Control (root privileges)
-            ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            //FIXED: OWASP A5:2017 - Broken Access Control (root privileges)
+            //ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            ds = (DataSource) ctx.lookup("jdbc/MySQL_Write_DataSource");
         } catch (NamingException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -37,8 +39,11 @@ public class CommentServlet extends HttpServlet {
 
         logger.info("Received request from " + request.getRemoteAddr());
 
-        //FIXME: OWASP A5:2017 - Broken Access Control
-        String username = request.getParameter("username");
+        //FIXED: OWASP A5:2017 - Broken Access Control
+        HttpSession session = request.getSession();
+        String username = session.getAttribute("username").toString();
+
+        //String username = request.getParameter("username");
 
         String comment = request.getParameter("comment");
 
