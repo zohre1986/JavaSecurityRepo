@@ -2,13 +2,13 @@ package servlets;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -27,7 +27,7 @@ public class PwdServlet extends HttpServlet {
         try {
             InitialContext ctx = new InitialContext();
             //FIXED: OWASP A5:2017 - Broken Access Control (root privileges)
-           // ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
+            // ds = (DataSource) ctx.lookup("jdbc/MySQL_root_DataSource");
             ds = (DataSource) ctx.lookup("jdbc/MySQL_Write_DataSource");
         } catch (NamingException e) {
             throw new ExceptionInInitializerError(e);
@@ -39,6 +39,7 @@ public class PwdServlet extends HttpServlet {
                          HttpServletResponse response)
             throws IOException {
 
+        HttpSession session = request.getSession();
         logger.info("Received request from " + request.getRemoteAddr());
 
         try (Connection connection = ds.getConnection()) {
@@ -48,7 +49,8 @@ public class PwdServlet extends HttpServlet {
             //FIXME: OWASP A2:2017 - Broken Authentication
             //  Username is determined based on client-provided information
             //  Session not checked
-            String username = request.getParameter("username");
+            //String username = request.getParameter("username");
+            String username = (String) session.getAttribute("username");
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // 1) URLs are often logged by web servers.
@@ -59,6 +61,7 @@ public class PwdServlet extends HttpServlet {
             String confirmPassword = request.getParameter("confirm");
             String oldPassword = request.getParameter("old");
 
+
             //FIXED: OWASP A5:2017 - Broken Access Control
             // Old password not checked
 
@@ -67,16 +70,17 @@ public class PwdServlet extends HttpServlet {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.first()){
+            if (resultSet.first()) {
                 String oldPass = resultSet.getString("password");
                 if (!oldPass.equals(oldPassword)) {
                     logger.warning("Your old password was incorrect!");
-                    response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                    response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                            "Your old password was incorrect!");
                     return;
                 }
-            }else {
+            } else {
                 logger.warning("User NOT exist!");
-                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                session.setAttribute("err" , "User NOT exist!");
                 return;
             }
 
@@ -86,33 +90,39 @@ public class PwdServlet extends HttpServlet {
 
             //  2) minimum password age
 
+            //  4) password length
+
+            if (password == null || confirmPassword == null || password.length() < 8) {
+                logger.warning("The new password must be at least 8 character!");
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                        "The new password must be at least 8 character!");
+                return;
+            }
+
             //  1) new password != old password
             if (password.equals(oldPassword)) {
                 logger.warning("The old password must be different from new password!");
-                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                        "The old password must be different from new password!");
                 return;
             }
 
             if (!password.equals(confirmPassword)) {
                 logger.warning("The new password must be equal to confirm password!");
-                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                        "The new password must be equal to confirm password!");
                 return;
             }
             //  3) password complexity
             Matcher matcher = VALID_PASSWORD_REGEX.matcher(password);
             if (!matcher.find()) {
                 logger.warning("The password complexity is violated");
-                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                        "The password complexity is violated");
                 return;
             }
 
-            //  4) password length
 
-            if (password == null || password.length() < 6) {
-                logger.warning("The new password must be at least 6 character!");
-                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
-                return;
-            }
             //FIXME: OWASP A1:2017 - Injection
             String query = String.format("update users " +
                             "set password = '%s' " +
@@ -147,4 +157,6 @@ public class PwdServlet extends HttpServlet {
             logger.warning(sqlException.getMessage());
         }
     }
+
+
 }
