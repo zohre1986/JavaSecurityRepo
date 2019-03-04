@@ -10,11 +10,10 @@ import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 @WebServlet("/admin.do")
@@ -55,6 +54,8 @@ public class AdminServlet extends HttpServlet {
 
         StringBuilder query = new StringBuilder();
         StringBuilder list = new StringBuilder();
+        List<String> idList = new ArrayList<>();
+        Map<String, String> idValueMap = new HashMap();
         query.append("UPDATE guestbook SET approved = (CASE id ");
 
         Enumeration<String> paramIds = request.getParameterNames();
@@ -63,8 +64,8 @@ public class AdminServlet extends HttpServlet {
         while (paramIds.hasMoreElements()) {
             String id = paramIds.nextElement();
             String val = request.getParameter(id);
-            query.append(String.format("WHEN '%s' THEN '%s' ",
-                    id, val));
+            query.append(String.format("WHEN ? THEN ? ", id, val));
+            idValueMap.put(id, val);
             list.append(String.format("'%s', ", id));
             count++;
         }
@@ -76,19 +77,39 @@ public class AdminServlet extends HttpServlet {
 
         // Remove the extra ", " from list
         list.delete(list.length() - 2, list.length());
-        query.append(String.format("END) WHERE id IN (%s)", list));
+        query.append("END) WHERE id IN ( ");
+        int itemNumber = 1;
+        for (String id : idValueMap.keySet()) {
+            if (itemNumber != idValueMap.keySet().size())
+                query.append("? , ");
+            else query.append("? ) ");
+            itemNumber++;
+        }
+
+
 
         logger.info("Query: " + query);
 
         try (Connection connection = ds.getConnection()) {
 
-            Statement st = connection.createStatement();
+            /*Statement st = connection.createStatement();*/
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
+            int index=1;
+            for (String str : idValueMap.keySet()) {
+                preparedStatement.setString(index++, str);
+                preparedStatement.setString(index++, idValueMap.get(str));
+            }
+            for (String id : idList) {
+                preparedStatement.setString(index++,id);
+            }
 
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
             //FIXME: OWASP A1:2017 - Injection
             //FIXME: OWASP A8:2013 - CSRF
-            st.executeUpdate(query.toString());
+            int result = preparedStatement.executeUpdate();
+            logger.info(result + " row(s) affected by update query.");
 
             response.sendRedirect("admin.jsp");
 
