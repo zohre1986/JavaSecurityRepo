@@ -1,4 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Change Password</title>
@@ -9,11 +8,6 @@
     <h1 class="row">Change You Password</h1>
 
     <hr>
-    <%! String s1 = ""; %>
-    <% s1  = (String) session.getAttribute("err");%>
-    <% if(s1 != null ){ %>
-    <div class="error" style="color : red">${s1}</div>
-    <% } %>
 
     <%--FIXME: OWASP A3:2017 - Sensitive Data Exposure
         1) URLs are often logged by web servers.
@@ -53,36 +47,36 @@
         <button type="submit" class="btn btn-warning btn-lg">Submit</button>
     </form>
 
-    <%--<script>--%>
-        <%--var frm = $("#frm");--%>
-        <%--var cookie_pwd = Cookies.get("password");--%>
+    <script>
+        var frm = $("#frm");
+        var cookie_pwd = Cookies.get("password");
 
-        <%--frm.submit(function (event) {--%>
-            <%--var old = $("#old").val();--%>
-            <%--var password = $("#password").val();--%>
-            <%--var confirm = $("#confirm").val();--%>
+        frm.submit(function (event) {
+            var old = $("#old").val();
+            var password = $("#password").val();
+            var confirm = $("#confirm").val();
 
-            <%--&lt;%&ndash;FIXED: OWASP A5:2017 - Broken Access Control--%>
-                <%--Password confirmation is only performed on client side--%>
-            <%--&ndash;%&gt;--%>
-            <%--if (old !== cookie_pwd) {--%>
-                <%--bootbox.alert("Invalid old password!");--%>
-                <%--event.preventDefault();--%>
-                <%--return;--%>
-            <%--}--%>
+            <%--FIXME: OWASP A5:2017 - Broken Access Control
+                Password confirmation is only performed on client side
+            --%>
+            if (old !== cookie_pwd) {
+                bootbox.alert("Invalid old password!");
+                event.preventDefault();
+                return;
+            }
 
-            <%--if (password.length === 0) {--%>
-                <%--bootbox.alert("Please enter a password!");--%>
-                <%--event.preventDefault();--%>
-                <%--return;--%>
-            <%--}--%>
+            if (password.length === 0) {
+                bootbox.alert("Please enter a password!");
+                event.preventDefault();
+                return;
+            }
 
-            <%--if (password !== confirm) {--%>
-                <%--bootbox.alert("Confirmation doesn't match the password!");--%>
-                <%--event.preventDefault();--%>
-            <%--}--%>
-        <%--})--%>
-    <%--</script>--%>
+            if (password !== confirm) {
+                bootbox.alert("Confirmation doesn't match the password!");
+                event.preventDefault();
+            }
+        })
+    </script>
 </div>
 </body>
 </html>

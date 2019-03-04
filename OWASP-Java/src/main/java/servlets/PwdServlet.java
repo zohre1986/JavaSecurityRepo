@@ -8,6 +8,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.logging.Logger;
@@ -124,12 +128,19 @@ public class PwdServlet extends HttpServlet {
 
 
             //FIXME: OWASP A1:2017 - Injection
-            String query  = "Update users SET password = ? WHERE username = ?";
+           /* String query = String.format("update users " +
+                            "set password = '%s' " +
+                            "where username = '%s'",
+                    password, username);*/
+
+            String query = "Update users SET password = ? WHERE username = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+            preparedStatement1.setString(1, password);
+            preparedStatement1.setString(2, username);
 //               String.format("update users " +
 //                            "set password = '%s' " +
 //                            "where username = '%s'",
 //                    password, username);
-            PreparedStatement preparedStatement1 = connection.prepareStatement(query);
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // Log reveals sensitive info

@@ -9,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -43,11 +42,8 @@ public class SerializeServlet extends HttpServlet {
 
         ServletOutputStream out = response.getOutputStream();
 
-        //FIXED: OWASP A5:2017 - Broken Access Control
-//        String username = request.getParameter("username");
-        HttpSession session = request.getSession();
-        String username = session.getAttribute("username").toString();
-
+        //FIXME: OWASP A5:2017 - Broken Access Control
+        String username = request.getParameter("username");
         if (username == null || "".equals(username)) {
             logger.warning("Empty username.");
             out.println("Empty username.");

@@ -14,13 +14,7 @@
 
 <div class="container">
 
-    <%
-        HttpSession httpSession = request.getSession();
-        String username = (String) httpSession.getAttribute("username");
-        String role = (String) httpSession.getAttribute("role");
-    %>
-
-<%--FIXME: OWASP A5:2017 - Broken Access Control
+    <%--FIXME: OWASP A5:2017 - Broken Access Control
         This page must not be accessible to unauthenticated users
     --%>
     <%--FIXME: OWASP A2:2017 - Broken Authentication
@@ -32,42 +26,42 @@
         and set the header to something which includes a rogue cookie like:
             Cookie: username=kambiz<script>alert(45)</script>; password=1; role=admin
     --%>
-    <c:set var="username" value="${username}" scope="page"/>
-    <%-- <c:set var="password" value="${cookie['password'].value}" scope="page"/>--%>
-     <c:set var="role" value="${role}" scope="page"/>
+    <c:set var="username" value="${cookie['username'].value}" scope="page"/>
+    <c:set var="password" value="${cookie['password'].value}" scope="page"/>
+    <c:set var="role" value="${cookie['role'].value}" scope="page"/>
 
 
-     <div class="row">
-         <h1 class="col-md-6">Welcome!</h1>
-         <div class="col-md-3">
-             <a href="logout.do">
-                 <button class="btn btn-lg btn-danger">Logout</button>
-             </a>
-         </div>
-     </div>
+    <div class="row">
+        <h1 class="col-md-6">Welcome!</h1>
+        <div class="col-md-3">
+            <a href="logout.do">
+                <button class="btn btn-lg btn-danger">Logout</button>
+            </a>
+        </div>
+    </div>
 
-     <hr>
+    <hr>
 
-     <p>&nbsp;</p>
+    <p>&nbsp;</p>
 
-     <div class="row">
-         <div style="font-weight: bold;" class="col-md-3">Your username is:</div>
-         <div class="col-md-3">${username}</div>
-         <div class="col-md-6">
-             <a href="comment.jsp">
-                 <button class="btn btn-primary">Post a comment</button>
-             </a>
-             <a href="guestbook.jsp">
-                 <button class="btn btn-success">View guestbook</button>
-             </a>
-         </div>
-     </div>
+    <div class="row">
+        <div style="font-weight: bold;" class="col-md-3">Your username is:</div>
+        <div class="col-md-3">${username}</div>
+        <div class="col-md-6">
+            <a href="comment.jsp">
+                <button class="btn btn-primary">Post a comment</button>
+            </a>
+            <a href="guestbook.jsp">
+                <button class="btn btn-success">View guestbook</button>
+            </a>
+        </div>
+    </div>
 
-     <div class="row">
-         <%--FIXME: OWASP A3:2017 - Sensitive Data Exposure
-             Sensitive information is added to DOM (Document Object Model)
-             It's accessible by JavaScript, even if the cookie isn't
-         --%>
+    <div class="row">
+        <%--FIXME: OWASP A3:2017 - Sensitive Data Exposure
+            Sensitive information is added to DOM (Document Object Model)
+            It's accessible by JavaScript, even if the cookie isn't
+        --%>
         <div style="font-weight: bold;" class="col-md-3">Your password is:</div>
         <div class="col-md-3">${password}</div>
         <div class="col-md-3">

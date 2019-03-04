@@ -3,13 +3,13 @@ package servlets;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.logging.Logger;
 
 @WebServlet("/login.do")
@@ -35,7 +35,6 @@ public class LoginServlet extends HttpServlet {
 
         logger.info("Received request from " + request.getRemoteAddr());
 
-        HttpSession session = request.getSession();
         String userParam = request.getParameter("username");
         String passParam = request.getParameter("password");
 
@@ -67,22 +66,26 @@ public class LoginServlet extends HttpServlet {
 
         //FIXME: OWASP A1:2017 - Injection
         //FIXME: Use "LIMIT 1" at the end of query to improve performance
-        String query = String.format("select * from users " +
+      /*  String query = String.format("select * from users " +
                         "where username = '%s' " +
                         "and password = '%s'",
-                userParam, passParam);
+                userParam, passParam);*/
 
 
         //FIXME: OWASP A3:2017 - Sensitive Data Exposure
-        logger.info("Query: " + query);
+       // logger.info("Query: " + query);
 
         String username, password, role;
 
         try (Connection connection = ds.getConnection()) {
 
             Statement st = connection.createStatement();
+            String selectSQL = "SELECT * FROM USERS WHERE USERNAME=? LIMIT 1";
+            PreparedStatement preparedStatement = connection.prepareStatement(selectSQL);
+            preparedStatement.setString(1, userParam);
+            ResultSet rs = preparedStatement.executeQuery();
 
-            ResultSet rs = st.executeQuery(query);
+            logger.info("Query: " + preparedStatement.toString());
 
             if (!rs.next()) {
                 logger.warning("User not found!");
@@ -109,24 +112,22 @@ public class LoginServlet extends HttpServlet {
         //  For same-site, see: https://stackoverflow.com/a/43106260/459391
         response.setHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
 
-        //FIXED: OWASP A5:2017 - Broken Access Control
+        //FIXME: OWASP A5:2017 - Broken Access Control
         //  Cookie used without any signature
-//        Cookie uCookie = new Cookie("username", username);
-//        response.addCookie(uCookie);
+        Cookie uCookie = new Cookie("username", username);
+        response.addCookie(uCookie);
 
-        session.setAttribute("username" ,username);
-        //FIXED: OWASP A5:2017 - Broken Access Control
+        //FIXME: OWASP A5:2017 - Broken Access Control
         //  Cookie used without any signature
         //FIXME: OWASP A3:2017 - Sensitive Data Exposure
         //  Password stored as plaintext on client-side
-//        Cookie pCookie = new Cookie("password", password);
-//        response.addCookie(pCookie);
+        Cookie pCookie = new Cookie("password", password);
+        response.addCookie(pCookie);
 
-        //FIXED: OWASP A5:2017 - Broken Access Control
+        //FIXME: OWASP A5:2017 - Broken Access Control
         //  Cookie used without any signature
-//        Cookie rCookie = new Cookie("role", role);
-//        response.addCookie(rCookie);
-        session.setAttribute("role" ,role);
+        Cookie rCookie = new Cookie("role", role);
+        response.addCookie(rCookie);
 
         response.sendRedirect("user.jsp");
     }

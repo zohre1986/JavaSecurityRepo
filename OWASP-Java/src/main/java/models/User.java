@@ -13,7 +13,4 @@ public final class User implements Serializable {
 
     public final String username, role, password;
     public final Timestamp created_at, updated_at;
-
-
-
 }
