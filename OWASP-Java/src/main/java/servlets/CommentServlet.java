@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
@@ -43,18 +44,23 @@ public class CommentServlet extends HttpServlet {
         String comment = request.getParameter("comment");
 
         //FIXME: OWASP A1:2017 - Injection
-        String query = String.format("INSERT INTO guestbook (userId, comment) " +
+       /* String query = String.format("INSERT INTO guestbook (userId, comment) " +
                         "VALUES ((SELECT id FROM users WHERE username='%s'), '%s')",
-                username, comment);
-
+                username, comment);*/
+        String query = String.format("INSERT INTO guestbook (userId, comment) " +
+                "VALUES ((SELECT id FROM users WHERE username = ? LIMIT 1),?)");
 
         try (Connection connection = ds.getConnection()) {
             Statement st = connection.createStatement();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, comment);
 
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
             //FIXME: OWASP A8:2013 - CSRF
-            st.executeUpdate(query);
+            int result = preparedStatement.executeUpdate();
+            logger.info(result + " row(s) affected by update query.");
 
         } catch (SQLException sqlException) {
             logger.warning(sqlException.getMessage());
