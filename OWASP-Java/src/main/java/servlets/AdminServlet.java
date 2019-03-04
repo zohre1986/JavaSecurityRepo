@@ -108,6 +108,7 @@ public class AdminServlet extends HttpServlet {
             // return value not logged
             //FIXME: OWASP A1:2017 - Injection
             //FIXME: OWASP A8:2013 - CSRF
+//            st.executeUpdate(query.toString());
             int result = preparedStatement.executeUpdate();
             logger.info(result + " row(s) affected by update query.");
 
