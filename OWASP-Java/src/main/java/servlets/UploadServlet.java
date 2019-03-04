@@ -51,7 +51,7 @@ public class UploadServlet extends HttpServlet {
         //FIXME: OWASP A3:2017 - Sensitive Data Exposure
         out.println("username: " + u.username);
         out.println("role: " + u.role);
-        out.println("password: " + u.password);
+//        out.println("password: " + u.password);
         out.println("created_at: " + u.created_at.toString());
         out.println("updated_at: " + u.updated_at.toString());
 
