@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.logging.Logger;
 
 @WebServlet("/login.do")
@@ -69,22 +66,26 @@ public class LoginServlet extends HttpServlet {
 
         //FIXME: OWASP A1:2017 - Injection
         //FIXME: Use "LIMIT 1" at the end of query to improve performance
-        String query = String.format("select * from users " +
+      /*  String query = String.format("select * from users " +
                         "where username = '%s' " +
                         "and password = '%s'",
-                userParam, passParam);
+                userParam, passParam);*/
 
 
         //FIXME: OWASP A3:2017 - Sensitive Data Exposure
-        logger.info("Query: " + query);
+       // logger.info("Query: " + query);
 
         String username, password, role;
 
         try (Connection connection = ds.getConnection()) {
 
             Statement st = connection.createStatement();
+            String selectSQL = "SELECT * FROM USERS WHERE USERNAME=? LIMIT 1";
+            PreparedStatement preparedStatement = connection.prepareStatement(selectSQL);
+            preparedStatement.setString(1, userParam);
+            ResultSet rs = preparedStatement.executeQuery();
 
-            ResultSet rs = st.executeQuery(query);
+            logger.info("Query: " + preparedStatement.toString());
 
             if (!rs.next()) {
                 logger.warning("User not found!");
