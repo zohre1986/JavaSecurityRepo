@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
@@ -65,10 +66,15 @@ public class PwdServlet extends HttpServlet {
             //  4) password length
 
             //FIXME: OWASP A1:2017 - Injection
-            String query = String.format("update users " +
+           /* String query = String.format("update users " +
                             "set password = '%s' " +
                             "where username = '%s'",
-                    password, username);
+                    password, username);*/
+
+            String query = "Update users SET password = ? WHERE username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, password);
+            preparedStatement.setString(2, username);
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // Log reveals sensitive info
