@@ -107,7 +107,7 @@ public class LoginServlet extends HttpServlet {
         //  Parameter "Remember me" is not observed
         //  Cookie security settings (httpOnly, secure, age, domain, path, same-site)
         //  For same-site, see: https://stackoverflow.com/a/43106260/459391
-        //      response.setHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict")
+        response.setHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
 
         //FIXED: OWASP A5:2017 - Broken Access Control
         //  Cookie used without any signature
