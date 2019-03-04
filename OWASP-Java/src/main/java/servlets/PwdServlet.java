@@ -144,7 +144,7 @@ public class PwdServlet extends HttpServlet {
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // Log reveals sensitive info
-            logger.info("Query: " + query);
+            logger.info("Query: " + preparedStatement1.toString());
 
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
