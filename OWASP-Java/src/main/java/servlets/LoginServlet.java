@@ -62,7 +62,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        //FIXME: OWASP A1:2017 - Injection
+        //FIXED: OWASP A1:2017 - Injection
         //FIXME: Use "LIMIT 1" at the end of query to improve performance
       /*  String query = String.format("select * from users " +
                         "where username = '%s' " +

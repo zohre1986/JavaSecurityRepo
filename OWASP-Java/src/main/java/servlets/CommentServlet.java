@@ -48,7 +48,7 @@ public class CommentServlet extends HttpServlet {
 
         String comment = request.getParameter("comment");
 
-        //FIXME: OWASP A1:2017 - Injection
+        //FIXED: OWASP A1:2017 - Injection
        /* String query = String.format("INSERT INTO guestbook (userId, comment) " +
                         "VALUES ((SELECT id FROM users WHERE username='%s'), '%s')",
                 username, comment);*/
