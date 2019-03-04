@@ -127,7 +127,7 @@ public class PwdServlet extends HttpServlet {
             }
 
 
-            //FIXME: OWASP A1:2017 - Injection
+            //FIXED: OWASP A1:2017 - Injection
            /* String query = String.format("update users " +
                             "set password = '%s' " +
                             "where username = '%s'",

@@ -3,10 +3,7 @@ package servlets;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
@@ -36,6 +33,7 @@ public class LoginXServlet extends HttpServlet {
                          HttpServletResponse response)
             throws IOException {
 
+        HttpSession session = request.getSession();
         logger.info("Received request from " + request.getRemoteAddr());
         String userParam = request.getParameter("username");
         String passParam = request.getParameter("password");
@@ -60,9 +58,9 @@ public class LoginXServlet extends HttpServlet {
                 return;
             }
 
-//            username = rs.getString("username");
-//            password = rs.getString("password");
-//            role = rs.getString("role");
+            username = rs.getString("username");
+            password = rs.getString("password");
+            role = rs.getString("role");
 
             logger.info("User found.");
 
@@ -83,7 +81,7 @@ public class LoginXServlet extends HttpServlet {
         //  Cookie used without any signature
       //  Cookie uCookie = new Cookie("username", username);
      //   response.addCookie(uCookie);
-
+        session.setAttribute("username" ,username);
         //FIXED: OWASP A5:2017 - Broken Access Control
 
         //  Cookie used without any signature
@@ -91,13 +89,13 @@ public class LoginXServlet extends HttpServlet {
         //  Password stored as plaintext on client-side
      //   Cookie pCookie = new Cookie("password", password);
      //   response.addCookie(pCookie);
-
+        session.setAttribute("password" ,password);
         //FIXED: OWASP A5:2017 - Broken Access Control
 
         //  Cookie used without any signature
     //    Cookie rCookie = new Cookie("role", role);
      //   response.addCookie(rCookie);
-
+        session.setAttribute("role" ,role);
         response.sendRedirect("user.jsp");
     }
 }
