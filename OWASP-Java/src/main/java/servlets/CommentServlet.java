@@ -14,10 +14,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @WebServlet("/comment.do")
 public class CommentServlet extends HttpServlet {
     private static final long serialVersionUID = -6689380769108812893L;
+    private static Pattern usernamePattern = Pattern.compile("^[A-Za-z0-9_.]+$");
     private static DataSource ds;
 
     private Logger logger = Logger.getLogger(getClass().getName());
@@ -43,6 +45,13 @@ public class CommentServlet extends HttpServlet {
         //FIXED: OWASP A5:2017 - Broken Access Control
         HttpSession session = request.getSession(false);
         String username = session.getAttribute("username").toString();
+        //added by hourieh
+        if (!usernamePattern.matcher(username).matches()) {
+            logger.warning("Invalid characters in username.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Invalid characters in username.");
+            return;
+        }
 
         //String username = request.getParameter("username");
 
