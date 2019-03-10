@@ -15,10 +15,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @WebServlet("/admin.do")
 public class AdminServlet extends HttpServlet {
     private static final long serialVersionUID = 4501855365314172264L;
+    private static Pattern idPattern = Pattern.compile("^(0|[1-9][0-9]*)$");
+    private static Pattern inputPattern = Pattern.compile("^[A-Za-z0-9_.]+$");
     private static DataSource ds;
 
     private Logger logger = Logger.getLogger(getClass().getName());
@@ -62,8 +65,24 @@ public class AdminServlet extends HttpServlet {
         int count = 0;
 
         while (paramIds.hasMoreElements()) {
+            //added by hourieh
             String id = paramIds.nextElement();
+            if (!idPattern.matcher(id).matches()) {
+                logger.warning("Invalid characters in id.");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid characters in id.");
+                return;
+            }
+
             String val = request.getParameter(id);
+            if (!inputPattern.matcher(val).matches()) {
+                logger.warning("Invalid characters in input.");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid characters in input.");
+                return;
+            }
+
+
             query.append(String.format("WHEN ? THEN ? ", id, val));
             idValueMap.put(id, val);
             list.append(String.format("'%s', ", id));
