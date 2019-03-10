@@ -69,7 +69,7 @@ public class CommentServlet extends HttpServlet {
             //FIXME: OWASP A8:2013 - CSRF
             int result = preparedStatement.executeUpdate();
             logger.info(result + " row(s) affected by update query.");
-            //FIXED: OWASP A8:2013 - CSRF
+            //FIXME: OWASP A8:2013 - CSRF
 //            st.executeUpdate(query);
 
         } catch (SQLException sqlException) {

@@ -52,7 +52,7 @@ public class PwdServlet extends HttpServlet {
 
             Statement st = connection.createStatement();
 
-            //FIXME: OWASP A2:2017 - Broken Authentication
+            //FIXED: OWASP A2:2017 - Broken Authentication
             //  Username is determined based on client-provided information
             //  Session not checked
             //String username = request.getParameter("username");
@@ -161,11 +161,11 @@ public class PwdServlet extends HttpServlet {
 //                            "where username = '%s'",
 //                    password, username);
 
-            //FIXME: OWASP A3:2017 - Sensitive Data Exposure
+            //FIXED: OWASP A3:2017 - Sensitive Data Exposure
             // Log reveals sensitive info
            // logger.info("Query: " + preparedStatement1.toString());
 
-            //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
+            //FIXED: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
             //FIXME: OWASP A8:2013 - CSRF
 //            st.executeUpdate(query);
@@ -173,7 +173,7 @@ public class PwdServlet extends HttpServlet {
             logger.info("user: " + username + " has changed password");
             //FIXED: OWASP A5:2017 - Broken Access Control
             //  Cookie used without any signature
-            //FIXME: OWASP A3:2017 - Sensitive Data Exposure
+            //FIXED: OWASP A3:2017 - Sensitive Data Exposure
             //  Password stored as plaintext on client-side
             //FIXME: OWASP A2:2017 - Broken Authentication
             //  Parameter "Remember me" is not observed
