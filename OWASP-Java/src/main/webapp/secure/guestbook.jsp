@@ -7,7 +7,7 @@
     <jsp:include page="common.jsp"/>
 </head>
 <link rel="stylesheet"
-      href="static/css/custom.css">
+      href="../static/css/custom.css">
 <body>
 <div class="container">
     <sql:query dataSource="jdbc/MySQL_readonly_DataSource" var="result">
@@ -43,10 +43,12 @@
     </c:forEach>
 
     <br/><br/>
-
+<%
+    String username = (String) session.getAttribute("username");
+%>
     <p class="row" >
         <c:choose>
-            <c:when test="${cookie['username'] != null}">
+            <c:when test="${username}">
                 <a href="comment.jsp">
                     <button class="btn btn-lg btn-primary">
                         Post a comment
@@ -54,7 +56,7 @@
                 </a>
             </c:when>
             <c:otherwise>
-                <a href="index.jsp">
+                <a href="../index.jsp">
                     <button class="btn btn-lg btn-danger">
                         Login to add a comment
                     </button>

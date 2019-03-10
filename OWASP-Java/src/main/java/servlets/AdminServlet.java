@@ -41,7 +41,7 @@ public class AdminServlet extends HttpServlet {
 
         //FIXED: OWASP A5:2017 - Broken Access Control
        // String role = getCookieByName(request, "role");
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         String role = (String) session.getAttribute("role");
 
         if (!"admin".equals(role)) {

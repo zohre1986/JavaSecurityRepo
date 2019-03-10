@@ -41,7 +41,7 @@ public class CommentServlet extends HttpServlet {
         logger.info("Received request from " + request.getRemoteAddr());
 
         //FIXED: OWASP A5:2017 - Broken Access Control
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         String username = session.getAttribute("username").toString();
 
         //String username = request.getParameter("username");

@@ -1,5 +1,7 @@
 package servlets;
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
@@ -14,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.io.PrintWriter;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,11 +42,10 @@ public class PwdServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
+    protected void doPost(HttpServletRequest request,
                          HttpServletResponse response)
             throws IOException {
 
-        HttpSession session = request.getSession();
         logger.info("Received request from " + request.getRemoteAddr());
 
         try (Connection connection = ds.getConnection()) {
@@ -54,6 +56,7 @@ public class PwdServlet extends HttpServlet {
             //  Username is determined based on client-provided information
             //  Session not checked
             //String username = request.getParameter("username");
+            HttpSession session = request.getSession(false);
             String username = (String) session.getAttribute("username");
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
@@ -69,59 +72,73 @@ public class PwdServlet extends HttpServlet {
             //FIXED: OWASP A5:2017 - Broken Access Control
             // Old password not checked
 
-            String oldPassQry = "select password from users where username = ?";
+            String oldPassQry = "select password , updated_at from users where username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(oldPassQry);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.first()) {
-                String oldPass = resultSet.getString("password");
-                if (!oldPass.equals(oldPassword)) {
-                    logger.warning("Your old password was incorrect!");
-                    response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
-                            "Your old password was incorrect!");
-                    return;
-                }
-            } else {
+
+            if (!resultSet.next()) {
                 logger.warning("User NOT exist!");
-                session.setAttribute("err" , "User NOT exist!");
+                session.setAttribute("err", "User NOT exist!");
                 return;
             }
 
 
             //FIXED: OWASP A5:2017 - Broken Access Control
             // Security policies not checked:
-
+            //  1) new password != old password
             //  2) minimum password age
-
+            //  3) password complexity
             //  4) password length
+
+
+            String dbPassword = resultSet.getString("password");
+            StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+
+
+
+            Date updatedDate = resultSet.getDate("updated_at");
+            if (updatedDate.before(Date.valueOf(LocalDate.now()))) {
+                logger.warning("you changed your password one time today");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "you changed your password one time today!");
+                return;
+            }
+            if (passwordEncryptor.checkPassword(oldPassword, dbPassword)) {
+                logger.warning("Your old password was incorrect!");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Your old password was incorrect!");
+                return;
+            }
+
+
 
             if (password == null || confirmPassword == null || password.length() < 8) {
                 logger.warning("The new password must be at least 8 character!");
-                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
                         "The new password must be at least 8 character!");
                 return;
             }
 
-            //  1) new password != old password
             if (password.equals(oldPassword)) {
                 logger.warning("The old password must be different from new password!");
-                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
                         "The old password must be different from new password!");
                 return;
             }
 
             if (!password.equals(confirmPassword)) {
                 logger.warning("The new password must be equal to confirm password!");
-                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
                         "The new password must be equal to confirm password!");
                 return;
             }
-            //  3) password complexity
+
             Matcher matcher = VALID_PASSWORD_REGEX.matcher(password);
             if (!matcher.find()) {
                 logger.warning("The password complexity is violated");
-                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
                         "The password complexity is violated");
                 return;
             }
@@ -132,11 +149,13 @@ public class PwdServlet extends HttpServlet {
                             "set password = '%s' " +
                             "where username = '%s'",
                     password, username);*/
+            String encryptedPassword = passwordEncryptor.encryptPassword(password);
 
-            String query = "Update users SET password = ? WHERE username = ?";
+            String query = "Update users SET password = ? , updated_at = ? WHERE username = ?";
             PreparedStatement preparedStatement1 = connection.prepareStatement(query);
-            preparedStatement1.setString(1, password);
-            preparedStatement1.setString(2, username);
+            preparedStatement1.setString(1, encryptedPassword);
+            preparedStatement1.setDate(2, Date.valueOf(LocalDate.now()));
+            preparedStatement1.setString(3, username);
 //               String.format("update users " +
 //                            "set password = '%s' " +
 //                            "where username = '%s'",
@@ -144,13 +163,14 @@ public class PwdServlet extends HttpServlet {
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // Log reveals sensitive info
-            logger.info("Query: " + preparedStatement1.toString());
+           // logger.info("Query: " + preparedStatement1.toString());
 
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
             //FIXME: OWASP A8:2013 - CSRF
 //            st.executeUpdate(query);
             preparedStatement1.executeUpdate();
+            logger.info("user: " + username + " has changed password");
             //FIXED: OWASP A5:2017 - Broken Access Control
             //  Cookie used without any signature
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure

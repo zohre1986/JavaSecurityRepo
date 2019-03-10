@@ -15,7 +15,7 @@ public class LogoutServlet extends HttpServlet {
             throws IOException {
 
         //FIXME: OWASP A2:2017 - Broken Authentication
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         session.invalidate();
         response.sendRedirect("index.jsp");
     }

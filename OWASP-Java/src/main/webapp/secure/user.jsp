@@ -14,7 +14,7 @@
 
 <div class="container">
 
-    <%--FIXME: OWASP A5:2017 - Broken Access Control
+    <%--FIXED: OWASP A5:2017 - Broken Access Control
         This page must not be accessible to unauthenticated users
     --%>
     <%--FIXME: OWASP A2:2017 - Broken Authentication
@@ -26,15 +26,20 @@
         and set the header to something which includes a rogue cookie like:
             Cookie: username=kambiz<script>alert(45)</script>; password=1; role=admin
     --%>
-    <c:set var="username" value="${cookie['username'].value}" scope="page"/>
-    <c:set var="password" value="${cookie['password'].value}" scope="page"/>
-    <c:set var="role" value="${cookie['role'].value}" scope="page"/>
+    <%
+        String username= (String) session.getAttribute("username");
+        String role= (String) session.getAttribute("role");
+    %>
+
+    <%--<c:set var="username" value="${cookie['username'].value}" scope="page"/>--%>
+    <%--<c:set var="password" value="${cookie['password'].value}" scope="page"/>--%>
+    <%--<c:set var="role" value="${cookie['role'].value}" scope="page"/>--%>
 
 
     <div class="row">
         <h1 class="col-md-6">Welcome!</h1>
         <div class="col-md-3">
-            <a href="logout.do">
+            <a href="../logout.do">
                 <button class="btn btn-lg btn-danger">Logout</button>
             </a>
         </div>
@@ -86,7 +91,7 @@
         <div style="font-weight: bold;" class="col-md-3">Your role is:</div>
         <div class="col-md-3">${role}</div>
 
-        <%--FIXME: OWASP A5:2017 - Broken Access Control
+        <%--FIXED: OWASP A5:2017 - Broken Access Control
             Access is granted based on a cookie
         --%>
         <c:if test="${role.equals('admin')}">

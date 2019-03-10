@@ -15,13 +15,17 @@
            Use POST method!
         2) Use TLS.
     --%>
-    <form id="frm" action="pwd.do" method="get">
-        <%--FIXME: OWASP A2:2017 - Broken Authentication
+
+    <form id="frm" action="pwd.do" method="post">
+        <%--FIXED: OWASP A2:2017 - Broken Authentication
             Username is determined based on client-provided information
         --%>
+        <%
+            String username= (String) session.getAttribute("username");
+        %>
         <input type="hidden"
                name="username" id="username"
-               value="${cookie['username'].value}">
+               value="${username}">
 
         <div class="form-group">
             <label for="old">Old Password:</label>
@@ -47,36 +51,36 @@
         <button type="submit" class="btn btn-warning btn-lg">Submit</button>
     </form>
 
-    <script>
-        var frm = $("#frm");
-        var cookie_pwd = Cookies.get("password");
+    <%--<script>--%>
+        <%--var frm = $("#frm");--%>
+        <%--var cookie_pwd = Cookies.get("password");--%>
 
-        frm.submit(function (event) {
-            var old = $("#old").val();
-            var password = $("#password").val();
-            var confirm = $("#confirm").val();
+        <%--frm.submit(function (event) {--%>
+            <%--var old = $("#old").val();--%>
+            <%--var password = $("#password").val();--%>
+            <%--var confirm = $("#confirm").val();--%>
 
-            <%--FIXME: OWASP A5:2017 - Broken Access Control
-                Password confirmation is only performed on client side
-            --%>
-            if (old !== cookie_pwd) {
-                bootbox.alert("Invalid old password!");
-                event.preventDefault();
-                return;
-            }
+            <%--&lt;%&ndash;FIXED: OWASP A5:2017 - Broken Access Control--%>
+                <%--Password confirmation is only performed on client side--%>
+            <%--&ndash;%&gt;--%>
+            <%--if (old !== cookie_pwd) {--%>
+                <%--bootbox.alert("Invalid old password!");--%>
+                <%--event.preventDefault();--%>
+                <%--return;--%>
+            <%--}--%>
 
-            if (password.length === 0) {
-                bootbox.alert("Please enter a password!");
-                event.preventDefault();
-                return;
-            }
+            <%--if (password.length === 0) {--%>
+                <%--bootbox.alert("Please enter a password!");--%>
+                <%--event.preventDefault();--%>
+                <%--return;--%>
+            <%--}--%>
 
-            if (password !== confirm) {
-                bootbox.alert("Confirmation doesn't match the password!");
-                event.preventDefault();
-            }
-        })
-    </script>
+            <%--if (password !== confirm) {--%>
+                <%--bootbox.alert("Confirmation doesn't match the password!");--%>
+                <%--event.preventDefault();--%>
+            <%--}--%>
+        <%--})--%>
+    <%--</script>--%>
 </div>
 </body>
 </html>

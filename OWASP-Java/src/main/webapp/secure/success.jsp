@@ -23,7 +23,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <img src="static/img/thanks.jpg">
+            <img src="../static/img/thanks.jpg">
         </div>
     </div>
 </div>

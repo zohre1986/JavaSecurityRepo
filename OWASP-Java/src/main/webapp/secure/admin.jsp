@@ -11,12 +11,12 @@
     <%--<meta http-equiv="Content-Security-Policy" content="script-src 'self'">--%>
     <title>Administration</title>
     <jsp:include page="common.jsp"/>
-    <link rel="stylesheet"
-          href="static/css/custom.css">
-</head>
+
+</head>    <link rel="stylesheet"
+                 href="../static/css/custom.css">
 <body>
 <div class="container">
-    <%--FIXME: OWASP A5:2017 - Broken Access Control
+    <%--FIXED: OWASP A5:2017 - Broken Access Control
         This page must not be accessible to unauthenticated users
     --%>
     <%--FIXME: OWASP A2:2017 - Broken Authentication

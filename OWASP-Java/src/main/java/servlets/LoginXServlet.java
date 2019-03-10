@@ -29,7 +29,7 @@ public class LoginXServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
+    protected void doPost(HttpServletRequest request,
                          HttpServletResponse response)
             throws IOException {
 
@@ -89,7 +89,6 @@ public class LoginXServlet extends HttpServlet {
         //  Password stored as plaintext on client-side
      //   Cookie pCookie = new Cookie("password", password);
      //   response.addCookie(pCookie);
-        session.setAttribute("password" ,password);
         //FIXED: OWASP A5:2017 - Broken Access Control
 
         //  Cookie used without any signature
