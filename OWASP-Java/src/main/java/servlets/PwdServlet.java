@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 @WebServlet("/pwd.do")
 public class PwdServlet extends HttpServlet {
     private static final long serialVersionUID = -8123085861273087650L;
+    private static Pattern usernamePattern = Pattern.compile("^[A-Za-z0-9_.]+$");
     public static final Pattern VALID_PASSWORD_REGEX = Pattern.compile("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!-/|:-@|\\[-`|{-~]).*)");
 
     private static DataSource ds;
@@ -58,6 +59,13 @@ public class PwdServlet extends HttpServlet {
             //String username = request.getParameter("username");
             HttpSession session = request.getSession(false);
             String username = (String) session.getAttribute("username");
+            //added by hourieh
+            if (!usernamePattern.matcher(username).matches()) {
+                logger.warning("Invalid characters in username.");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid characters in username.");
+                return;
+            }
 
             //FIXME: OWASP A3:2017 - Sensitive Data Exposure
             // 1) URLs are often logged by web servers.
