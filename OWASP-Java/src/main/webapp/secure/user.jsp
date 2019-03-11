@@ -63,12 +63,12 @@
     </div>
 
     <div class="row">
-        <%--FIXME: OWASP A3:2017 - Sensitive Data Exposure
+        <%--FIXED: OWASP A3:2017 - Sensitive Data Exposure
             Sensitive information is added to DOM (Document Object Model)
             It's accessible by JavaScript, even if the cookie isn't
         --%>
-        <div style="font-weight: bold;" class="col-md-3">Your password is:</div>
-        <div class="col-md-3">${password}</div>
+        <%--<div style="font-weight: bold;" class="col-md-3">Your password is:</div>--%>
+        <%--<div class="col-md-3">${password}</div>--%>
         <div class="col-md-3">
             <a href="change_pass.jsp">
                 <button class="btn btn-dark">Change Password</button>
