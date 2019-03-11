@@ -67,30 +67,39 @@ public class PwdServlet extends HttpServlet {
                 return;
             }
 
-            //FIXME: OWASP A3:2017 - Sensitive Data Exposure
+            //FIXME: OWASP A3:2017 - Sensitive Data Exposure (FIXED)
             // 1) URLs are often logged by web servers.
             //    Sensitive data such as passwords must not be included in URLs.
             //    Use POST method!
             // 2) Use TLS.
+            //do by hourieh
             String password = request.getParameter("password");
             String confirmPassword = request.getParameter("confirm");
-            String oldPassword = request.getParameter("old");
+           // String oldPassword = request.getParameter("old");
 
 
             //FIXED: OWASP A5:2017 - Broken Access Control
             // Old password not checked
-
+            String oldPassword;
             String oldPassQry = "select password , updated_at from users where username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(oldPassQry);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.first()) {
+                logger.info("User found.");
+                 oldPassword = resultSet.getString("password");
 
-
-            if (!resultSet.next()) {
-                logger.warning("User NOT exist!");
-                session.setAttribute("err", "User NOT exist!");
+                if (oldPassword.equals(request.getParameter("old"))) {
+                    logger.warning("Your new password must be different from your previous password.!");
+                    response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
+                    return;
+                }
+            } else {
+                logger.warning("User NOT found!");
+                response.sendRedirect(response.encodeRedirectURL("/pages/failed.jsp"));
                 return;
             }
+
 
 
             //FIXED: OWASP A5:2017 - Broken Access Control
