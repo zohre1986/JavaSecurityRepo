@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>User homepage</title>
-    <jsp:include page="common.jsp"/>
+    <jsp:include page="form/secure/common.jsp"/>
     <style>
         .row {
             margin-top: 20px;
@@ -11,6 +11,7 @@
     </style>
 </head>
 <body>
+<INPUT type="HIDDEN" name="CSRF_NONCE" value="<%=response.encodeURL(null)%>">
 
 <div class="container">
 

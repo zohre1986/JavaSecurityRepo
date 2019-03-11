@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>GDPR</title>
-    <jsp:include page="common.jsp"/>
+    <jsp:include page="/form/secure/common.jsp"/>
 </head>
 <body>
 
@@ -27,7 +27,7 @@
 
     <div class="row">
         <h4 class="col-md-12">
-            Click <a href="serialize.do?username=${cookie['username'].value}">here</a>
+            Click <a href="/form/serialize.do?username=${cookie['username'].value}&CSRF_NONCE=<%=response.encodeURL(null)%>">here</a>
             to download a copy of your data.
         </h4>
     </div>

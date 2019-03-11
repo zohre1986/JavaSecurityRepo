@@ -10,10 +10,10 @@
 <head>
     <%--<meta http-equiv="Content-Security-Policy" content="script-src 'self'">--%>
     <title>Administration</title>
-    <jsp:include page="common.jsp"/>
+    <jsp:include page="/form/secure/common.jsp"/>
 
 </head>    <link rel="stylesheet"
-                 href="../static/css/custom.css">
+                 href="../../static/css/custom.css">
 <body>
 <div class="container">
     <%--FIXED: OWASP A5:2017 - Broken Access Control
@@ -45,7 +45,7 @@
     </div>
 
     <form action="admin.do">
-
+        <INPUT type="HIDDEN" name="CSRF_NONCE" value="<%=response.encodeURL(null)%>">
         <c:forEach var="row" items="${result.rows}">
             <div class="row tr">
                 <div class="col-md-2">

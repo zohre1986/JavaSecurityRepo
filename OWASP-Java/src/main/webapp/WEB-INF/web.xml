@@ -34,18 +34,18 @@
         https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CSRF_Prevention_Filter
     -->
 
-    <!-- <filter>
+    <filter>
          <filter-name>CSRF</filter-name>
          <filter-class>filters.myCatalina.MyCsrfPreventionFilter</filter-class>
          <init-param>
              <param-name>entryPoints</param-name>
-             <param-value>/index.jsp</param-value>
+             <param-value>/index.jsp,error.jsp,success.jsp,guestbook.jsp,gdpr.jsp,failed.jsp,change_pass.jsp,admin.jsp</param-value>
          </init-param>
      </filter>
 
      <filter-mapping>
          <filter-name>CSRF</filter-name>
          <url-pattern>/*</url-pattern>
-     </filter-mapping>-->
+     </filter-mapping>
 
 </web-app>
