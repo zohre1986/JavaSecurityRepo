@@ -68,8 +68,9 @@ public class SerializeServlet extends HttpServlet {
 
             if (!rs.next()) {
                 logger.warning("Username not found!");
-                //FIXME: OWASP A3:2017 - Sensitive Data Exposure
-                out.println("Username not found!");
+                //FIXME: OWASP A3:2017 - Sensitive Data Exposure (Fixed)
+                out.println("You have no permision");
+                //out.println("Username not found!");
                 return;
             }
 
@@ -83,8 +84,9 @@ public class SerializeServlet extends HttpServlet {
 
         } catch (SQLException e) {
             logger.warning(e.getMessage());
-            //FIXME: OWASP A3:2017 - Sensitive Data Exposure
-            out.println(e.getMessage());
+            //FIXME: OWASP A3:2017 - Sensitive Data Exposure (FIXED)
+            out.println("Error detected");
+            //out.println(e.getMessage());
             return;
         }
 
@@ -95,8 +97,9 @@ public class SerializeServlet extends HttpServlet {
                     String.format("attachment; filename=\"%s.ser\"", username));
         } catch (IOException e) {
             logger.warning(e.getMessage());
-            //FIXME: OWASP A3:2017 - Sensitive Data Exposure
-            out.println(e.getMessage());
+            //FIXME: OWASP A3:2017 - Sensitive Data Exposure (FIXED)
+            out.println("Error detected");
+            //out.println(e.getMessage());
         }
     }
 }
