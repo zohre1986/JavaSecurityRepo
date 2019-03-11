@@ -14,9 +14,10 @@ public class LogoutServlet extends HttpServlet {
                          HttpServletResponse response)
             throws IOException {
 
-        //FIXME: OWASP A2:2017 - Broken Authentication
-        HttpSession session = request.getSession();
+        //FIXED: OWASP A2:2017 - Broken Authentication
+        HttpSession session = request.getSession(false);
         session.invalidate();
+        deleteCookies(request,response);
         response.sendRedirect("index.jsp");
     }
 

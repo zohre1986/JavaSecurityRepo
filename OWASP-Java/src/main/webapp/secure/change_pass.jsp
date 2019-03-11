@@ -1,4 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Change Password</title>
@@ -9,11 +8,6 @@
     <h1 class="row">Change You Password</h1>
 
     <hr>
-    <%! String s1 = ""; %>
-    <% s1  = (String) session.getAttribute("err");%>
-    <% if(s1 != null ){ %>
-    <div class="error" style="color : red">${s1}</div>
-    <% } %>
 
     <%--FIXME: OWASP A3:2017 - Sensitive Data Exposure
         1) URLs are often logged by web servers.
@@ -21,13 +15,17 @@
            Use POST method!
         2) Use TLS.
     --%>
-    <form id="frm" action="pwd.do" method="get">
-        <%--FIXME: OWASP A2:2017 - Broken Authentication
+
+    <form id="frm" action="pwd.do" method="post">
+        <%--FIXED: OWASP A2:2017 - Broken Authentication
             Username is determined based on client-provided information
         --%>
+        <%
+            String username= (String) session.getAttribute("username");
+        %>
         <input type="hidden"
                name="username" id="username"
-               value="${cookie['username'].value}">
+               value="${username}">
 
         <div class="form-group">
             <label for="old">Old Password:</label>

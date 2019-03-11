@@ -44,7 +44,7 @@ public class SerializeServlet extends HttpServlet {
         ServletOutputStream out = response.getOutputStream();
 
         //FIXED: OWASP A5:2017 - Broken Access Control
-//        String username = request.getParameter("username");
+        //String username = request.getParameter("username");
         HttpSession session = request.getSession();
         String username = session.getAttribute("username").toString();
 

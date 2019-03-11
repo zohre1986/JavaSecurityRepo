@@ -13,14 +13,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @WebServlet("/admin.do")
 public class AdminServlet extends HttpServlet {
     private static final long serialVersionUID = 4501855365314172264L;
+    private static Pattern idPattern = Pattern.compile("^(0|[1-9][0-9]*)$");
+    private static Pattern inputPattern = Pattern.compile("^[A-Za-z0-9_.]+$");
     private static DataSource ds;
 
     private Logger logger = Logger.getLogger(getClass().getName());
@@ -43,7 +44,7 @@ public class AdminServlet extends HttpServlet {
 
         //FIXED: OWASP A5:2017 - Broken Access Control
        // String role = getCookieByName(request, "role");
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         String role = (String) session.getAttribute("role");
 
         if (!"admin".equals(role)) {
@@ -56,16 +57,34 @@ public class AdminServlet extends HttpServlet {
 
         StringBuilder query = new StringBuilder();
         StringBuilder list = new StringBuilder();
+        List<String> idList = new ArrayList<>();
+        Map<String, String> idValueMap = new HashMap();
         query.append("UPDATE guestbook SET approved = (CASE id ");
 
         Enumeration<String> paramIds = request.getParameterNames();
         int count = 0;
 
         while (paramIds.hasMoreElements()) {
+            //added by hourieh
             String id = paramIds.nextElement();
+            if (!idPattern.matcher(id).matches()) {
+                logger.warning("Invalid characters in id.");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid characters in id.");
+                return;
+            }
+
             String val = request.getParameter(id);
-            query.append(String.format("WHEN '%s' THEN '%s' ",
-                    id, val));
+            if (!inputPattern.matcher(val).matches()) {
+                logger.warning("Invalid characters in input.");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid characters in input.");
+                return;
+            }
+
+
+            query.append(String.format("WHEN ? THEN ? ", id, val));
+            idValueMap.put(id, val);
             list.append(String.format("'%s', ", id));
             count++;
         }
@@ -77,20 +96,38 @@ public class AdminServlet extends HttpServlet {
 
         // Remove the extra ", " from list
         list.delete(list.length() - 2, list.length());
-        query.append(String.format("END) WHERE id IN (%s)", list));
+        query.append("END) WHERE id IN ( ");
+        int itemNumber = 1;
+        for (String id : idValueMap.keySet()) {
+            if (itemNumber != idValueMap.keySet().size())
+                query.append("? , ");
+            else query.append("? ) ");
+            itemNumber++;
+        }
+
+
 
         logger.info("Query: " + query);
 
         try (Connection connection = ds.getConnection()) {
 
-            Statement st = connection.createStatement();
+            /*Statement st = connection.createStatement();*/
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
+            int index=1;
+            for (String str : idValueMap.keySet()) {
+                preparedStatement.setString(index++, str);
+                preparedStatement.setString(index++, idValueMap.get(str));
+            }
+            for (String id : idList) {
+                preparedStatement.setString(index++,id);
+            }
 
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
-            //FIXME: OWASP A1:2017 - Injection
+            //FIXED: OWASP A1:2017 - Injection
             //FIXME: OWASP A8:2013 - CSRF
 //            st.executeUpdate(query.toString());
-            PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
             int result = preparedStatement.executeUpdate();
             logger.info(result + " row(s) affected by update query.");
 

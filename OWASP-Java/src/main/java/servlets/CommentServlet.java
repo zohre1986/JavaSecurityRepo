@@ -14,10 +14,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @WebServlet("/comment.do")
 public class CommentServlet extends HttpServlet {
     private static final long serialVersionUID = -6689380769108812893L;
+    private static Pattern usernamePattern = Pattern.compile("^[A-Za-z0-9_.]+$");
     private static DataSource ds;
 
     private Logger logger = Logger.getLogger(getClass().getName());
@@ -41,14 +43,24 @@ public class CommentServlet extends HttpServlet {
         logger.info("Received request from " + request.getRemoteAddr());
 
         //FIXED: OWASP A5:2017 - Broken Access Control
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         String username = session.getAttribute("username").toString();
+        //added by hourieh
+        if (!usernamePattern.matcher(username).matches()) {
+            logger.warning("Invalid characters in username.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Invalid characters in username.");
+            return;
+        }
 
         //String username = request.getParameter("username");
 
         String comment = request.getParameter("comment");
 
-        //FIXME: OWASP A1:2017 - Injection
+        //FIXED: OWASP A1:2017 - Injection
+       /* String query = String.format("INSERT INTO guestbook (userId, comment) " +
+                        "VALUES ((SELECT id FROM users WHERE username='%s'), '%s')",
+                username, comment);*/
 //        String query = String.format("INSERT INTO guestbook (userId, comment) " +
 //                        "VALUES ((SELECT id FROM users WHERE username='%s'), '%s')",
 //                username, comment);
@@ -56,15 +68,18 @@ public class CommentServlet extends HttpServlet {
         String query = String.format("INSERT INTO guestbook (userId, comment) " +
                 "VALUES ((SELECT id FROM users WHERE username = ? LIMIT 1),?)");
         try (Connection connection = ds.getConnection()) {
+            Statement st = connection.createStatement();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, comment);
 
             //FIXME: OWASP A10:2017 - Insufficient Logging & Monitoring
             // return value not logged
-            //FIXED: OWASP A8:2013 - CSRF
-//            st.executeUpdate(query);
+            //FIXME: OWASP A8:2013 - CSRF
             int result = preparedStatement.executeUpdate();
+            logger.info(result + " row(s) affected by update query.");
+            //FIXME: OWASP A8:2013 - CSRF
+//            st.executeUpdate(query);
 
         } catch (SQLException sqlException) {
             logger.warning(sqlException.getMessage());
