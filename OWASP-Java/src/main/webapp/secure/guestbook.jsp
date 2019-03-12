@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Guestbook</title>
-    <jsp:include page="/form/secure/common.jsp"/>
+    <jsp:include page="common.jsp"/>
 </head>
 <link rel="stylesheet"
       href="../static/css/custom.css">
@@ -49,7 +49,7 @@
     <p class="row" >
         <c:choose>
             <c:when test="${username}">
-                <a href="/form/comment.jsp?CSRF_NONCE=<%=response.encodeURL(null)%>">
+                <a href="comment.jsp?CSRF_NONCE=<%=response.encodeURL(null)%>">
                     <button class="btn btn-lg btn-primary">
                         Post a comment
                     </button>

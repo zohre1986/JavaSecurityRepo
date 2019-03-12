@@ -13,8 +13,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="OWASP-Java" target="1.8" />
-      <module name="Pure-Java" target="12" />
-      <module name="Top-Project" target="12" />
+      <module name="Pure-Java" target="11" />
+      <module name="Top-Project" target="11" />
       <module name="XXE-Showcase" target="1.8" />
     </bytecodeTargetLevel>
   </component>

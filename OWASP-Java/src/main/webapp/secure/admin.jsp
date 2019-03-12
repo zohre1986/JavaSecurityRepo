@@ -10,10 +10,10 @@
 <head>
     <%--<meta http-equiv="Content-Security-Policy" content="script-src 'self'">--%>
     <title>Administration</title>
-    <jsp:include page="/form/secure/common.jsp"/>
+    <jsp:include page="common.jsp"/>
 
 </head>    <link rel="stylesheet"
-                 href="../../static/css/custom.css">
+                 href="../static/css/custom.css">
 <body>
 <div class="container">
     <%--FIXED: OWASP A5:2017 - Broken Access Control

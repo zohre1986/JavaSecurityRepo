@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>User homepage</title>
-    <jsp:include page="form/secure/common.jsp"/>
+    <jsp:include page="common.jsp"/>
     <style>
         .row {
             margin-top: 20px;
