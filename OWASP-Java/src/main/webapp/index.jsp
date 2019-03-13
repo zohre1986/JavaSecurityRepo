@@ -1,11 +1,9 @@
-<%@ page import="org.jasypt.salt.RandomSaltGenerator" %>
-<%@ page import="org.jasypt.commons.CommonUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <html>
 <head>
     <title>Login</title>
-    <jsp:include page="form/secure/common.jsp"/>
+    <jsp:include page="common.jsp"/>
 </head>
 <body>
 
