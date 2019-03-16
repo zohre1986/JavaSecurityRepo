@@ -17,6 +17,7 @@
     --%>
 
     <form id="frm" action="pwd.do" method="post">
+        <INPUT type="HIDDEN" name="CSRF_NONCE" value="<%=response.encodeURL(null)%>">
         <%--FIXED: OWASP A2:2017 - Broken Authentication
             Username is determined based on client-provided information
         --%>

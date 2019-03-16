@@ -11,13 +11,14 @@
     </style>
 </head>
 <body>
+<INPUT type="HIDDEN" name="CSRF_NONCE" value="<%=response.encodeURL(null)%>">
 
 <div class="container">
 
     <%--FIXED: OWASP A5:2017 - Broken Access Control
         This page must not be accessible to unauthenticated users
     --%>
-    <%--FIXME: OWASP A2:2017 - Broken Authentication
+    <%--FIXED: OWASP A2:2017 - Broken Authentication
         Session data about the currently authenticated user is retrieved from cookies
     --%>
 

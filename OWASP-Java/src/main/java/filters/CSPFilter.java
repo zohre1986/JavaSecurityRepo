@@ -27,7 +27,7 @@ public class CSPFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException {
 
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        httpResponse.setHeader("Content-Security-Policy", "alaki 'self'");
+        httpResponse.setHeader("Content-Security-Policy", "script-src 'self'");
 
         chain.doFilter(request, response);
     }

@@ -14,7 +14,9 @@
     </div>
 
     <hr/>
-
+<%
+    String username = (String) session.getAttribute("username");
+%>
     <div class="row" style="color: #e83e8c;">
         <h3 class="col-md-12">
             Based on European Union privacy law, called
@@ -27,7 +29,7 @@
 
     <div class="row">
         <h4 class="col-md-12">
-            Click <a href="serialize.do?username=${cookie['username'].value}">here</a>
+            Click <a href="serialize.do?username=${username}&CSRF_NONCE=<%=response.encodeURL(null)%>">here</a>
             to download a copy of your data.
         </h4>
     </div>

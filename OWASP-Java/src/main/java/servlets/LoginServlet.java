@@ -35,21 +35,9 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        String csrf = request.getParameter("csrf");
 
-        if (session == null
-                || csrf == null
-                || csrf.length() != 32
-                || !csrf.equals(session.getAttribute("csrf"))) {
 
-            logger.info("CSRF detected!");
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF detected!");
-            return;
-        }
-
-        session.removeAttribute("csrf");
-
-        if (session.getAttribute("userId") != null) {
+        if (session.getAttribute("username") != null) {
             logger.warning("User already logged in...");
             response.sendRedirect(String.format("%s/error.jsp?errno=4", request.getContextPath()));
             return;
@@ -152,7 +140,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        //FIXED: OWASP A2:2017 - Broken Authentication
+        //FIXME: OWASP A2:2017 - Broken Authentication
         //  Parameter "Remember me" is not observed
         //  Cookie security settings (httpOnly, secure, age, domain, path, same-site)
         //  For same-site, see: https://stackoverflow.com/a/43106260/459391
@@ -181,6 +169,6 @@ public class LoginServlet extends HttpServlet {
 //        response.addCookie(rCookie);
         session.setAttribute("role", role);
 
-        response.sendRedirect("secure/user.jsp");
+        response.sendRedirect("form/secure/user.jsp");
     }
 }

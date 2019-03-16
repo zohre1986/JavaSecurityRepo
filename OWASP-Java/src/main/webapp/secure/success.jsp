@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            Go back to <a href="user.jsp">user</a> page.
+            Go back to <a href="user.jsp?CSRF_NONCE=<%=response.encodeURL(null)%>">user</a> page.
         </div>
     </div>
 

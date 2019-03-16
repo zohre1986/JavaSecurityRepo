@@ -1,20 +1,12 @@
-<%@ page import="org.jasypt.salt.RandomSaltGenerator" %>
-<%@ page import="org.jasypt.commons.CommonUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <html>
 <head>
     <title>Login</title>
-    <jsp:include page="secure/common.jsp"/>
+    <jsp:include page="common.jsp"/>
 </head>
 <body>
-<%
-    if (session.getAttribute("csrf") == null) {
-        RandomSaltGenerator rsg = new RandomSaltGenerator();
-        String csrf = CommonUtils.toHexadecimal(rsg.generateSalt(16));
-        session.setAttribute("csrf", csrf);
-    }
-%>
+
 
 <div class="container">
     <h1>Login</h1>
@@ -32,9 +24,7 @@
         2) Use TLS.
     --%>
     <form action="login.do" method="post">
-
-        <INPUT type="HIDDEN" name="csrf" value="${sessionScope["csrf"]}">
-
+        <INPUT type="HIDDEN" name="CSRF_NONCE" value="<%=response.encodeURL(null)%>">
         <div class="form-group">
             <label for="username">Username:</label>
             <input class="form-control"

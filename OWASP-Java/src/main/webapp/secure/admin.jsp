@@ -45,7 +45,7 @@
     </div>
 
     <form action="admin.do">
-
+        <INPUT type="HIDDEN" name="CSRF_NONCE" value="<%=response.encodeURL(null)%>">
         <c:forEach var="row" items="${result.rows}">
             <div class="row tr">
                 <div class="col-md-2">

@@ -49,7 +49,7 @@
     <p class="row" >
         <c:choose>
             <c:when test="${username}">
-                <a href="comment.jsp">
+                <a href="comment.jsp?CSRF_NONCE=<%=response.encodeURL(null)%>">
                     <button class="btn btn-lg btn-primary">
                         Post a comment
                     </button>

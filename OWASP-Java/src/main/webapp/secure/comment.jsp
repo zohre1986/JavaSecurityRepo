@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Post a comment</title>
-    <jsp:include page="common.jsp"/>
+    <jsp:include page="form/secure/common.jsp"/>
 </head>
 <body>
 <div class="container">
