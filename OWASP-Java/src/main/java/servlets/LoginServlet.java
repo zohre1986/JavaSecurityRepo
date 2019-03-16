@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
 
 
 
-        if (session.getAttribute("userId") != null) {
+        if (session.getAttribute("username") != null) {
             logger.warning("User already logged in...");
             response.sendRedirect(String.format("%s/error.jsp?errno=4", request.getContextPath()));
             return;
